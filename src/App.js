@@ -45,7 +45,7 @@ class Fsmlogo extends React .Component {
 		this .state .text =
 			"\n\
 			==========================================================\n\
-			                            FSML                          \n\
+                                        FSML                          \n\
 			==========================================================\n\
 			\n\
 			FSML 0.3.7, (c) 2021, 2022 Alexander (Shurko) Stadnichenko\n\
