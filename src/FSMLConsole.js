@@ -1,15 +1,14 @@
 /* eslint-disable */
 
-import './App.css';
+import './FSMLConsole.css';
 import * as React from 'react';
 
 import { get_fsml_instance } from 'fsmlang';
 
 
-
-
 const fsml = get_fsml_instance ();
 const item_separator = " -> ";
+const ONLY = 0;
 
 
 class FSMLConsole extends React .Component {
@@ -27,7 +26,7 @@ class FSMLConsole extends React .Component {
 
 	render () {
 		return (
-			<div id='leftpane'>
+			<div className='fsml-console'>
 				<Fsmlogo />
 				<Fsmlog text = { this .state .text } />
 				<Inbox  send_news = { this .send_news } />
@@ -54,20 +53,17 @@ class Fsmlogo extends React .Component {
 
 	render = () =>
 		(<div
-			id = 'fsmlogo'
-			className = "ws-pre"
+			className = "fsmlogo ws-pre"
 			children = { this .state .text }
 		/>);
 }
 
 
 class Fsmlog extends React .Component {
-
-	constructor (props)
-		{ super (props); }
+	constructor (props) { super (props) }
 
 	render = () =>
-		(<div id = 'fsmlog' className = "ws-pre" children = { this .props .text } />);
+		<div className = 'fsmlog ws-pre' children = { this .props .text } />;
 }
 
 
@@ -83,63 +79,56 @@ class Inbox extends React .Component {
 		this .change_handler = this .change_handler .bind (this);
 
 		// If autofocus fail
-		setTimeout (() => document .getElementById ('inbox') .focus (), 2000);
+		setTimeout (() =>
+			document .getElementsByClassName ('inbox') [ONLY] .focus (), 2000);
 	}
 
-	enter_handler (e) {
-		e .preventDefault ();
+	enter_handler (evt) {
+		evt .preventDefault ();
+		const fsml_console =
+			evt .target .parentElement .parentElement;
 
 		const scroll_amount = 1000;
 		const delay_before_scroll = 200;
 		
 		let send_news = this .props .send_news;
-
 		let logtext = this .state .text ? '\n\n' + this .state .text : '';
-		
 		let eval_result = fsml .eval (this .state .text) || '';
 
 		if (eval_result)
 			logtext += '\n\n' + eval_result;
 		
 		const stack = fsml .stack .type ();
-
 		logtext += '\n\n' + '[' + fsml .stack .depth () + ']  ';
 
 		if (stack .length)
 			logtext += stack. join (item_separator);
 
 		this .setState ({ text: '' });
-
 		send_news (logtext);
 
 		/* Scroll for show prompt */
 		setTimeout
-			(() => document
-				.getElementById ('leftpane')
+			(() => fsml_console
 				.scrollBy (0, scroll_amount),
 			delay_before_scroll); }
 
-	change_handler (e)
-		{ this .setState ({ text: e .target .value }) }
+	change_handler = evt =>
+		this .setState ({ text: evt .target .value });
 
 	render = () =>
-		(<div>
-			<p>&nbsp;</p>
-			<div id='prompt'>{'fsml >'}</div>
+		(<div  className= 'inbox-wrapper'>
+			<div className='prompt'>{'fsml >'}</div>
 		  
-			<form id = 'inputform'
-				onSubmit = { this .enter_handler } >
-
+			<form className = 'inputform' onSubmit = { this .enter_handler } >
 				<input onChange = { this .change_handler }
 					name = "inbox"
-					id = "inbox"
+					className = "inbox"
 					autoFocus
 					value = { this .state .text } />
 			</form>
 		</div>);
 }
-
-
 
 
 export { FSMLConsole };
